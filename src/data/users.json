@@ -1,0 +1,22 @@
+{
+  "users": [
+    {
+      "email": "eve.holt@reqres.in",
+      "password": "cityslicka",
+      "name": "Admin User",
+      "role": "admin"
+    },
+    {
+      "email": "janet.weaver@reqres.in",
+      "password": "cityslicka",
+      "name": "Coach User",
+      "role": "coach"
+    },
+    {
+      "email": "charles.morris@reqres.in",
+      "password": "cityslicka",
+      "name": "Player User",
+      "role": "player"
+    }
+  ]
+}

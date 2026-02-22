@@ -1,1 +1,25 @@
 @import "tailwindcss";
+
+:root {
+  /* HOPE logo palette */
+  --hope-h-lime-green: #8dc63f;
+  --hope-o-cyan-blue: #00aeef;
+  --hope-p-vibrant-red: #ed1c24;
+  --hope-e-golden-yellow: #fdc116;
+
+  /* Supporting text colors */
+  --hope-tagline-dark: #1d1d1b;
+  --hope-text-white: #ffffff;
+
+  /* Base tokens */
+  --color-base: var(--hope-h-lime-green);
+  --color-text: var(--hope-tagline-dark);
+  --color-surface: var(--hope-text-white);
+}
+
+body {
+  color: var(--color-text);
+  background-color: var(--color-surface);
+}
+
+
