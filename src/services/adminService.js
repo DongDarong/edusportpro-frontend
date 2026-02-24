@@ -15,6 +15,7 @@ function normalizeDashboard(payload) {
   return {
     summaryCards: Array.isArray(data.summaryCards) ? data.summaryCards : [],
     recentActivities: Array.isArray(data.recentActivities) ? data.recentActivities : [],
+    teamsOverview: Array.isArray(data.teamsOverview) ? data.teamsOverview : [],
   }
 }
 

@@ -1,5 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue'
+
+// Components
 import MainLayout from '../../../components/layout/MainLayout.vue'
 import Navbar from '../../../components/layout/Navbar.vue'
 import Sidebar from '../../../components/layout/Sidebar.vue'
@@ -7,12 +9,16 @@ import HeaderSection from '../../../components/dashboard/HeaderSection.vue'
 import StatsCards from '../../../components/dashboard/StatsCards.vue'
 import TournamentHighlights from '../../../components/dashboard/TournamentHighlights.vue'
 import LoadingSpinner from '../../../components/common/LoadingSpinner.vue'
+import RecentActivities from '../../../components/dashboard/RecentActivities.vue'
+import TeamsOverview from '../../../components/dashboard/TeamsOverview.vue'
+
 import { getAdminDashboard } from '../../../services/adminService'
 
 const loading = ref(true)
 const loadError = ref('')
 const summaryCards = ref([])
 const recentActivities = ref([])
+const teamsOverview = ref([])
 
 async function loadDashboard() {
   loading.value = true
@@ -22,6 +28,7 @@ async function loadDashboard() {
     const { data } = await getAdminDashboard()
     summaryCards.value = data?.summaryCards ?? []
     recentActivities.value = data?.recentActivities ?? []
+    teamsOverview.value = data?.teamsOverview ?? []
   } catch (error) {
     loadError.value = error instanceof Error ? error.message : 'Unable to load admin dashboard data.'
   } finally {
@@ -69,6 +76,11 @@ onMounted(loadDashboard)
           :loading="false"
           :error="''"
         />
+
+        <div class="dashboard__detail-grid">
+          <RecentActivities :activities="recentActivities" :loading="false" :error="''" />
+          <TeamsOverview :teams="teamsOverview" />
+        </div>
       </template>
     </section>
   </MainLayout>
@@ -113,5 +125,11 @@ onMounted(loadDashboard)
   padding: 0.45rem 0.8rem;
   font-weight: 600;
   cursor: pointer;
+}
+
+.dashboard__detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
 }
 </style>
