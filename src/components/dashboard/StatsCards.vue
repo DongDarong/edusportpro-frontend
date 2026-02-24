@@ -1,4 +1,6 @@
 <script setup>
+import LoadingSpinner from '../common/LoadingSpinner.vue'
+
 const props = defineProps({
   cards: {
     type: Array,
@@ -39,7 +41,9 @@ function icon(status) {
 
 <template>
   <section class="stats">
-    <div v-if="loading" class="stats__state">Loading summary cards...</div>
+    <div v-if="loading" class="stats__state">
+      <LoadingSpinner label="Loading summary cards" size="md" />
+    </div>
     <div v-else-if="error" class="stats__state stats__state--error">{{ error }}</div>
 
     <div v-else class="stats__grid">

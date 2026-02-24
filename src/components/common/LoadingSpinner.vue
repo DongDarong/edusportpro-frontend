@@ -19,7 +19,9 @@ const props = defineProps({
 
 <template>
   <div class="loading" :class="[`loading--${size}`, `loading--${tone}`]" role="status" aria-live="polite">
-    <span class="loading__spinner" aria-hidden="true"></span>
+    <span class="loading__halo" aria-hidden="true">
+      <span class="loading__spinner"></span>
+    </span>
     <span class="loading__label">{{ label }}</span>
   </div>
 </template>
@@ -28,40 +30,54 @@ const props = defineProps({
 .loading {
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
-  font-weight: 600;
+  justify-content: center;
+  gap: 0.6rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   color: var(--spinner-color, var(--hope-o-cyan-blue));
-  font-size: 0.85rem;
+  font-size: 0.82rem;
+  width: 100%;
+}
+
+.loading__halo {
+  width: calc(var(--spinner-size, 1.2rem) + 0.45rem);
+  height: calc(var(--spinner-size, 1.2rem) + 0.45rem);
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--spinner-color, var(--hope-o-cyan-blue)) 12%, transparent);
 }
 
 .loading__spinner {
   width: var(--spinner-size, 1.25rem);
   height: var(--spinner-size, 1.25rem);
   border-radius: 50%;
-  border: 3px solid rgba(255, 255, 255, 0.15);
+  border: 2.5px solid color-mix(in srgb, var(--spinner-color, var(--hope-o-cyan-blue)) 28%, transparent);
   border-top-color: var(--spinner-color, var(--hope-o-cyan-blue));
-  animation: spin 0.9s linear infinite;
+  border-right-color: var(--spinner-color, var(--hope-o-cyan-blue));
+  animation: spin 0.8s linear infinite;
 }
 
 .loading__label {
-  font-size: var(--loading-label-size, 0.75rem);
+  font-size: var(--loading-label-size, 0.74rem);
+  color: color-mix(in srgb, var(--spinner-color, var(--hope-o-cyan-blue)) 86%, #1d1d1b);
 }
 
 .loading--sm {
   --spinner-size: 1rem;
-  --loading-label-size: 0.68rem;
+  --loading-label-size: 0.66rem;
 }
 
 .loading--md {
-  --spinner-size: 1.25rem;
-  --loading-label-size: 0.75rem;
+  --spinner-size: 1.2rem;
+  --loading-label-size: 0.74rem;
 }
 
 .loading--lg {
-  --spinner-size: 1.5rem;
-  --loading-label-size: 0.82rem;
+  --spinner-size: 1.45rem;
+  --loading-label-size: 0.8rem;
 }
 
 .loading--primary {

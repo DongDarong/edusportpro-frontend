@@ -5,7 +5,8 @@ import Navbar from '../../../components/layout/Navbar.vue'
 import Sidebar from '../../../components/layout/Sidebar.vue'
 import HeaderSection from '../../../components/dashboard/HeaderSection.vue'
 import StatsCards from '../../../components/dashboard/StatsCards.vue'
-import StatusBadge from '../../../components/common/StatusBadge.vue'
+import TournamentHighlights from '../../../components/dashboard/TournamentHighlights.vue'
+import LoadingSpinner from '../../../components/common/LoadingSpinner.vue'
 import { getAdminDashboard } from '../../../services/adminService'
 
 const loading = ref(true)
@@ -51,9 +52,24 @@ onMounted(loadDashboard)
         subtitle="Welcome back, here's what's happening with your teams."
       />
 
-      <StatsCards :cards="summaryCards" :loading="loading" :error="loadError" />
+      <div v-if="loading" class="dashboard__loading">
+        <LoadingSpinner label="Loading admin dashboard" size="lg" />
+      </div>
 
-      
+      <div v-else-if="loadError" class="dashboard__error">
+        <p>{{ loadError }}</p>
+        <button type="button" class="dashboard__retry" @click="loadDashboard">Retry</button>
+      </div>
+
+      <template v-else>
+        <StatsCards :cards="summaryCards" :loading="false" :error="''" />
+
+        <TournamentHighlights
+          :activities="recentActivities"
+          :loading="false"
+          :error="''"
+        />
+      </template>
     </section>
   </MainLayout>
 </template>
@@ -70,52 +86,32 @@ onMounted(loadDashboard)
   gap: 1rem;
 }
 
-.dashboard__panel {
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 0.8rem;
-  background: rgba(255, 255, 255, 0.03);
-  padding: 0.9rem;
-}
-
-.dashboard__panel-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  margin-bottom: 0.8rem;
-}
-
-.dashboard__panel-head h2 {
-  margin: 0;
-  font-size: 1rem;
-}
-
-.dashboard__activity {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+.dashboard__loading {
+  min-height: 260px;
   display: grid;
+  place-items: center;
+}
+
+.dashboard__error {
+  min-height: 180px;
+  display: grid;
+  place-items: center;
   gap: 0.6rem;
+  text-align: center;
+  border: 1px solid color-mix(in srgb, var(--hope-red) 35%, white);
+  border-radius: 0.85rem;
+  background: color-mix(in srgb, var(--hope-red) 8%, white);
+  color: #8e1418;
+  padding: 1rem;
 }
 
-.dashboard__activity-item {
-  display: flex;
-  align-items: start;
-  justify-content: space-between;
-  gap: 0.65rem;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 0.65rem;
-  padding: 0.65rem;
-}
-
-.dashboard__activity-message {
-  margin: 0;
-  font-size: 0.9rem;
-}
-
-.dashboard__activity-time {
-  margin: 0.2rem 0 0;
-  font-size: 0.78rem;
-  opacity: 0.78;
+.dashboard__retry {
+  border: 1px solid color-mix(in srgb, var(--hope-red) 50%, white);
+  background: #fff;
+  color: #8e1418;
+  border-radius: 0.55rem;
+  padding: 0.45rem 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
 }
 </style>
