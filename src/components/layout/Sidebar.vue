@@ -2,6 +2,9 @@
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import SidebarBrand from '../ui/SidebarBrandHeader.vue'
+import AdminSidebarSection from './AdminSidebarSection.vue'
+import CoachSidebarSection from './CoachSidebarSection.vue'
+import PlayerSidebarSection from './PlayerSidebarSection.vue'
 import { useAuthStore } from '../../stores/auth.js'
 
 const emit = defineEmits(['close'])
@@ -9,21 +12,8 @@ const route = useRoute()
 const router = useRouter()
 const { state, clearAuth } = useAuthStore()
 
-const authMenu = [
-  { label: 'Admin Dashboard', to: '/admin/dashboard', role: 'admin' },
-  { label: 'Coach Dashboard', to: '/coach/dashboard', role: 'coach' },
-  { label: 'Player Dashboard', to: '/player/dashboard', role: 'player' },
-]
-
-const menuItems = computed(() => {
-  if (!state.user?.role) {
-    return [{ label: 'Login', to: '/login' }]
-  }
-  return authMenu.filter((item) => item.role === state.user.role)
-})
-
 const secondaryLinks = [
-  { label: 'Help Center', to: '/docs/help' },
+  { label: 'Help Center', to: '/' },
   { label: 'Notifications', to: '/notifications' },
 ]
 
@@ -31,6 +21,10 @@ const currentPath = computed(() => route.path)
 
 function isActive(path) {
   return currentPath.value === path
+}
+
+function isRoleActive(role) {
+  return state.user?.role === role
 }
 
 function onClose() {
@@ -55,25 +49,28 @@ function handleLogout() {
         </button>
       </div>
       <div class="sidebar__user">
-        <p class="sidebar__user-name">{{ state.user?.name || 'Guest' }}</p>
-        <p class="sidebar__user-role">{{ state.user?.role ? state.user.role.toUpperCase() : 'Not signed in' }}</p>
-        <button v-if="state.user" type="button" class="sidebar__logout" @click="handleLogout">
-          Logout
-        </button>
+        
+
       </div>
     </div>
 
-    <ul class="sidebar__menu">
-      <li v-for="item in menuItems" :key="item.to">
-        <RouterLink
-          :to="item.to"
-          class="sidebar__link"
-          :class="{ 'sidebar__link--active': isActive(item.to) }"
-        >
-          {{ item.label }}
-        </RouterLink>
-      </li>
-    </ul>
+    <div class="sidebar__menu">
+      <AdminSidebarSection
+        :active-path="currentPath"
+        :active-role="isRoleActive('admin')"
+        @navigate="onClose"
+      />
+      <CoachSidebarSection
+        :active-path="currentPath"
+        :active-role="isRoleActive('coach')"
+        @navigate="onClose"
+      />
+      <PlayerSidebarSection
+        :active-path="currentPath"
+        :active-role="isRoleActive('player')"
+        @navigate="onClose"
+      />
+    </div>
 
     <section class="sidebar__secondary" aria-label="Secondary navigation">
       <h2>Resources</h2>
@@ -93,7 +90,10 @@ function handleLogout() {
 
     <div class="sidebar__footer">
       <slot name="footer">
-        <small class="sidebar__meta">Hope Foundation of Cambodia</small>
+        
+        <button v-if="state.user" type="button" class="sidebar__logout" @click="handleLogout">
+          Logout
+        </button>
       </slot>
     </div>
   </nav>
@@ -168,11 +168,8 @@ function handleLogout() {
 }
 
 .sidebar__menu {
-  list-style: none;
-  margin: 0;
-  padding: 0;
   display: grid;
-  gap: 0.3rem;
+  gap: 0.6rem;
 }
 
 .sidebar__secondary {
