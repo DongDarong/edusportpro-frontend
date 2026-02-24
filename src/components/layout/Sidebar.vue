@@ -1,15 +1,30 @@
 <script setup>
 import { computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import SidebarBrand from '../ui/SidebarBrandHeader.vue'
+import { useAuthStore } from '../../stores/auth.js'
 
 const emit = defineEmits(['close'])
 const route = useRoute()
+const router = useRouter()
+const { state, clearAuth } = useAuthStore()
 
-const menuItems = [
-  { label: 'Admin Dashboard', to: '/admin/dashboard' },
-  { label: 'Coach Dashboard', to: '/coach/dashboard' },
-  { label: 'Player Dashboard', to: '/player/dashboard' },
+const authMenu = [
+  { label: 'Admin Dashboard', to: '/admin/dashboard', role: 'admin' },
+  { label: 'Coach Dashboard', to: '/coach/dashboard', role: 'coach' },
+  { label: 'Player Dashboard', to: '/player/dashboard', role: 'player' },
+]
+
+const menuItems = computed(() => {
+  if (!state.user?.role) {
+    return [{ label: 'Login', to: '/login' }]
+  }
+  return authMenu.filter((item) => item.role === state.user.role)
+})
+
+const secondaryLinks = [
+  { label: 'Help Center', to: '/docs/help' },
+  { label: 'Notifications', to: '/notifications' },
 ]
 
 const currentPath = computed(() => route.path)
@@ -21,17 +36,31 @@ function isActive(path) {
 function onClose() {
   emit('close')
 }
+
+function handleLogout() {
+  clearAuth()
+  router.replace({ name: 'login' })
+}
 </script>
 
 <template>
   <nav class="sidebar" aria-label="Main navigation">
     <div class="sidebar__header">
-      <slot name="header">
-        <SidebarBrand />
-      </slot>
-      <button type="button" class="sidebar__close" aria-label="Close sidebar" @click="onClose">
-        x
-      </button>
+      <div class="sidebar__brand-wrapper">
+        <slot name="header">
+          <SidebarBrand />
+        </slot>
+        <button type="button" class="sidebar__close" aria-label="Close sidebar" @click="onClose">
+          x
+        </button>
+      </div>
+      <div class="sidebar__user">
+        <p class="sidebar__user-name">{{ state.user?.name || 'Guest' }}</p>
+        <p class="sidebar__user-role">{{ state.user?.role ? state.user.role.toUpperCase() : 'Not signed in' }}</p>
+        <button v-if="state.user" type="button" class="sidebar__logout" @click="handleLogout">
+          Logout
+        </button>
+      </div>
     </div>
 
     <ul class="sidebar__menu">
@@ -45,6 +74,22 @@ function onClose() {
         </RouterLink>
       </li>
     </ul>
+
+    <section class="sidebar__secondary" aria-label="Secondary navigation">
+      <h2>Resources</h2>
+      <ul>
+        <li v-for="link in secondaryLinks" :key="link.to">
+          <RouterLink
+            :to="link.to"
+            class="sidebar__secondary-link"
+            :class="{ 'sidebar__link--active': isActive(link.to) }"
+            @click="onClose"
+          >
+            {{ link.label }}
+          </RouterLink>
+        </li>
+      </ul>
+    </section>
 
     <div class="sidebar__footer">
       <slot name="footer">
@@ -63,19 +108,18 @@ function onClose() {
 }
 
 .sidebar__header {
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--hope-o-cyan-blue);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.sidebar__brand-wrapper {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--hope-o-cyan-blue);
-}
-
-.sidebar__title {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--color-text);
 }
 
 .sidebar__close {
@@ -93,12 +137,74 @@ function onClose() {
   background: var(--hope-e-golden-yellow);
 }
 
+.sidebar__user {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.sidebar__user-name {
+  margin: 0;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.sidebar__user-role {
+  margin: 0;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.sidebar__logout {
+  border: 0;
+  background: transparent;
+  color: var(--hope-o-cyan-blue);
+  padding: 0;
+  font-size: 0.75rem;
+  text-align: left;
+  cursor: pointer;
+}
+
 .sidebar__menu {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
   gap: 0.3rem;
+}
+
+.sidebar__secondary {
+  border-top: 1px dashed rgba(255, 255, 255, 0.2);
+  padding-top: 0.75rem;
+}
+
+.sidebar__secondary h2 {
+  margin: 0 0 0.4rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.sidebar__secondary ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.sidebar__secondary-link {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.sidebar__secondary-link:hover {
+  color: var(--hope-o-cyan-blue);
 }
 
 .sidebar__link {
@@ -144,10 +250,6 @@ function onClose() {
     gap: 0.75rem;
   }
 
-  .sidebar__title {
-    font-size: 0.92rem;
-  }
-
   .sidebar__link {
     padding: 0.55rem 0.6rem;
     font-size: 0.88rem;
@@ -157,10 +259,6 @@ function onClose() {
 @media (max-width: 480px) {
   .sidebar__header {
     padding-bottom: 0.4rem;
-  }
-
-  .sidebar__title {
-    font-size: 0.85rem;
   }
 
   .sidebar__link {
@@ -178,10 +276,6 @@ function onClose() {
   .sidebar__close {
     width: 26px;
     height: 26px;
-  }
-
-  .sidebar__title {
-    font-size: 0.8rem;
   }
 }
 </style>

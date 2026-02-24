@@ -1,0 +1,14 @@
+{
+  "summaryCards": [
+    { "title": "Total Users", "value": "1,248", "status": "success", "label": "+8.2% this month" },
+    { "title": "Active Coaches", "value": "96", "status": "info", "label": "Stable this week" },
+    { "title": "Pending Approvals", "value": "14", "status": "warning", "label": "Needs review" },
+    { "title": "System Alerts", "value": "3", "status": "error", "label": "Immediate attention" }
+  ],
+  "recentActivities": [
+    { "id": 1, "message": "Coach account \"Sok Dara\" approved", "time": "5 minutes ago", "status": "success" },
+    { "id": 2, "message": "New player registration awaiting verification", "time": "17 minutes ago", "status": "pending" },
+    { "id": 3, "message": "Password reset requested by admin user", "time": "34 minutes ago", "status": "info" },
+    { "id": 4, "message": "Program report export failed", "time": "1 hour ago", "status": "error" }
+  ]
+}

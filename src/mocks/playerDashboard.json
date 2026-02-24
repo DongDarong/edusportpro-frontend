@@ -1,0 +1,13 @@
+{
+  "summaryCards": [
+    { "title": "Attendance", "value": "92%", "status": "success", "label": "Up 4% this month" },
+    { "title": "Training Score", "value": "87", "status": "info", "label": "Above team average" },
+    { "title": "Upcoming Matches", "value": "2", "status": "warning", "label": "This week" },
+    { "title": "Recovery Tasks", "value": "1", "status": "pending", "label": "Due today" }
+  ],
+  "nextActivities": [
+    { "id": 1, "title": "Morning Warm-up", "time": "07:30 AM", "location": "Field B", "status": "info" },
+    { "id": 2, "title": "Tactical Review", "time": "10:00 AM", "location": "Video Room", "status": "success" },
+    { "id": 3, "title": "Recovery Stretch", "time": "05:00 PM", "location": "Gym Room 1", "status": "pending" }
+  ]
+}

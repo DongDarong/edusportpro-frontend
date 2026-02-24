@@ -1,0 +1,13 @@
+{
+  "summaryCards": [
+    { "title": "Assigned Players", "value": "42", "status": "success", "label": "3 new this week" },
+    { "title": "Today Sessions", "value": "6", "status": "info", "label": "2 in progress" },
+    { "title": "Pending Reports", "value": "5", "status": "warning", "label": "Submit before Friday" },
+    { "title": "Injury Alerts", "value": "1", "status": "error", "label": "Needs follow-up" }
+  ],
+  "upcomingSessions": [
+    { "id": 1, "title": "U16 Speed & Agility", "time": "09:00 AM", "location": "Field A", "status": "info" },
+    { "id": 2, "title": "Recovery Session", "time": "11:30 AM", "location": "Gym Room 2", "status": "pending" },
+    { "id": 3, "title": "Match Prep", "time": "03:00 PM", "location": "Main Stadium", "status": "success" }
+  ]
+}

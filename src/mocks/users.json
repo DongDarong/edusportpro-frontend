@@ -1,0 +1,22 @@
+{
+  "users": [
+    {
+      "email": "admin@gmail.com",
+      "password": "admin123",
+      "name": "Admin User",
+      "role": "admin"
+    },
+    {
+      "email": "coach@gmail.com",
+      "password": "coach123",
+      "name": "Coach User",
+      "role": "coach"
+    },
+    {
+      "email": "player@gmail.com",
+      "password": "player123",
+      "name": "Player User",
+      "role": "player"
+    }
+  ]
+}

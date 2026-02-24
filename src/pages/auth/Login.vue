@@ -1,12 +1,13 @@
 <script setup>
-import { reactive, computed, ref } from 'vue'
+import { reactive, computed, ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/auth.js'
-import usersData from '../../data/users.json'
+import { getUsers, loginWithEmail } from '../../services/userService'
 
 const router = useRouter()
 const { setToken } = useAuthStore()
 const loading = ref(false)
+const usersList = ref([])
 const alert = reactive({
   error: '',
   success: '',
@@ -17,10 +18,17 @@ const form = reactive({
   password: '',
 })
 
-const usersList = usersData?.users ?? []
-const demoCredentials = usersList[0] ?? { email: '', password: '' }
-
+const demoCredentials = computed(() => usersList.value[0] ?? { email: '', password: '' })
 const canSubmit = computed(() => form.email.trim().length > 0 && form.password.trim().length > 0)
+
+onMounted(async () => {
+  try {
+    const { data } = await getUsers()
+    usersList.value = data?.users ?? []
+  } catch {
+    usersList.value = []
+  }
+})
 
 async function handleSubmit(event) {
   event.preventDefault()
@@ -35,24 +43,17 @@ async function handleSubmit(event) {
   alert.success = ''
 
   try {
-    const normalizedEmail = form.email.trim().toLowerCase()
-    const matchedUser = usersList.find(
-      (user) => user.email.toLowerCase() === normalizedEmail && user.password === form.password,
-    )
+    const { token, user } = await loginWithEmail(form.email, form.password)
+    setToken(token, user)
 
-    if (!matchedUser) {
-      throw new Error('Invalid credentials for the local user dataset.')
-    }
+    const destination = {
+      admin: '/admin/dashboard',
+      coach: '/coach/dashboard',
+      player: '/player/dashboard',
+    }[user?.role] ?? '/login'
 
-    const token = `local:${matchedUser.email}`
-    setToken(token, {
-      name: matchedUser.name,
-      email: matchedUser.email,
-      role: matchedUser.role,
-    })
-
-    alert.success = 'Login successful (local JSON). Redirecting to the dashboard…'
-    setTimeout(() => router.replace('/admin/dashboard'), 700)
+    alert.success = `Login successful. Redirecting to the ${user?.role ?? 'default'} dashboard...`
+    setTimeout(() => router.replace(destination), 700)
   } catch (error) {
     alert.error = error instanceof Error ? error.message : 'Unexpected error during login.'
   } finally {
@@ -64,7 +65,6 @@ async function handleSubmit(event) {
 <template>
   <div class="auth-page">
     <div class="auth-card">
-
       <form class="auth-form" @submit="handleSubmit" novalidate>
         <label>
           <span>Email</span>
@@ -85,19 +85,27 @@ async function handleSubmit(event) {
             type="password"
             required
             autocomplete="current-password"
-            placeholder="••••••••"
+            placeholder="********"
             :disabled="loading"
           />
         </label>
 
         <button type="submit" class="primary" :disabled="!canSubmit || loading">
-          <span v-if="loading">Checking…</span>
+          <span v-if="loading">Checking...</span>
           <span v-else>Sign in</span>
         </button>
 
         <p class="note">
-          Uses the bundled `src/data/users.json` dataset. Matching credentials store a simulated token
-          in <code>localStorage</code> to model an authenticated session.
+          Uses <code>src/services/userService.js</code> with env switch
+          <code>VITE_USE_MOCK_API=true|false</code>.
+        </p>
+        <p class="note" v-if="demoCredentials.email">
+          Demo credentials: <strong>{{ demoCredentials.email }}</strong> /
+          <strong>{{ demoCredentials.password }}</strong>
+        </p>
+        <p class="note">
+          Admin logins go to the admin dashboard, coach logins go to the coach dashboard, and player
+          logins go to the player dashboard.
         </p>
 
         <p v-if="alert.error" class="alert error">{{ alert.error }}</p>
@@ -129,50 +137,6 @@ async function handleSubmit(event) {
   padding: 2rem;
   box-shadow: 0 20px 45px rgba(3, 8, 20, 0.6);
   color: #e2ecff;
-}
-
-.auth-card__header {
-  margin-bottom: 1.25rem;
-}
-
-.eyebrow {
-  letter-spacing: 0.3em;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  color: #74d0ff;
-  margin-bottom: 0.25rem;
-}
-
-h1 {
-  margin-bottom: 0.25rem;
-  font-size: 1.75rem;
-  line-height: 1.25;
-}
-
-.subhead {
-  margin: 0 0 0.75rem;
-  color: rgba(226, 236, 255, 0.8);
-  font-size: 0.95rem;
-}
-
-.demo-credentials {
-  display: grid;
-  gap: 0.4rem;
-  background: rgba(255, 255, 255, 0.04);
-  padding: 0.75rem;
-  border-radius: 0.8rem;
-  font-size: 0.85rem;
-}
-
-.demo-credentials .label {
-  color: rgba(255, 255, 255, 0.55);
-  font-size: 0.7rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.demo-credentials strong {
-  font-size: 0.95rem;
 }
 
 .auth-form {
@@ -255,10 +219,6 @@ button.primary:not(:disabled):hover {
 @media (max-width: 480px) {
   .auth-card {
     padding: 1.5rem;
-  }
-
-  h1 {
-    font-size: 1.5rem;
   }
 }
 </style>

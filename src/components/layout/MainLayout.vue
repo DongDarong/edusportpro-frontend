@@ -1,9 +1,29 @@
 <script setup>
-import { ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import Navbar from './Navbar.vue'
 import Sidebar from './Sidebar.vue'
 
+const props = defineProps({
+  mobileBreakpoint: {
+    type: Number,
+    default: 768,
+  },
+  closeOnNavigation: {
+    type: Boolean,
+    default: true,
+  },
+  closeOnContentClick: {
+    type: Boolean,
+    default: true,
+  },
+})
+
+const route = useRoute()
 const isSidebarOpen = ref(false)
+const isMobileViewport = ref(false)
+let mediaQueryList = null
+let previousBodyOverflow = ''
 
 function openSidebar() {
   isSidebarOpen.value = true
@@ -16,6 +36,92 @@ function closeSidebar() {
 function toggleSidebar() {
   isSidebarOpen.value = !isSidebarOpen.value
 }
+
+function onContentClick() {
+  if (props.closeOnContentClick && isSidebarOpen.value) {
+    closeSidebar()
+  }
+}
+
+function onKeydown(event) {
+  if (event.key === 'Escape' && isSidebarOpen.value) {
+    closeSidebar()
+  }
+}
+
+function syncViewport() {
+  if (typeof window === 'undefined') return
+  isMobileViewport.value = window.innerWidth <= props.mobileBreakpoint
+}
+
+function lockBodyScroll() {
+  if (typeof document === 'undefined') return
+  if (!isMobileViewport.value) return
+
+  if (isSidebarOpen.value) {
+    previousBodyOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return
+  }
+
+  document.body.style.overflow = previousBodyOverflow
+}
+
+watch(
+  () => route.fullPath,
+  () => {
+    if (props.closeOnNavigation) {
+      closeSidebar()
+    }
+  },
+)
+
+watch(isSidebarOpen, () => {
+  lockBodyScroll()
+})
+
+watch(isMobileViewport, (isMobile) => {
+  if (!isMobile) {
+    if (typeof document !== 'undefined') {
+      document.body.style.overflow = previousBodyOverflow
+    }
+    isSidebarOpen.value = false
+    return
+  }
+
+  lockBodyScroll()
+})
+
+onMounted(() => {
+  syncViewport()
+  document.addEventListener('keydown', onKeydown)
+
+  if (typeof window !== 'undefined') {
+    mediaQueryList = window.matchMedia(`(max-width: ${props.mobileBreakpoint}px)`)
+
+    if (typeof mediaQueryList.addEventListener === 'function') {
+      mediaQueryList.addEventListener('change', syncViewport)
+    } else {
+      mediaQueryList.addListener(syncViewport)
+    }
+  }
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('keydown', onKeydown)
+
+  if (mediaQueryList) {
+    if (typeof mediaQueryList.removeEventListener === 'function') {
+      mediaQueryList.removeEventListener('change', syncViewport)
+    } else {
+      mediaQueryList.removeListener(syncViewport)
+    }
+  }
+
+  if (typeof document !== 'undefined') {
+    document.body.style.overflow = previousBodyOverflow
+  }
+})
 </script>
 
 <template>
@@ -32,10 +138,16 @@ function toggleSidebar() {
         class="layout__overlay"
         :class="{ 'layout__overlay--visible': isSidebarOpen }"
         aria-label="Close sidebar"
+        :aria-hidden="!isSidebarOpen"
         @click="closeSidebar"
       />
 
-      <aside class="layout__sidebar" :class="{ 'layout__sidebar--open': isSidebarOpen }">
+      <aside
+        id="main-layout-sidebar"
+        class="layout__sidebar"
+        :class="{ 'layout__sidebar--open': isSidebarOpen }"
+        :aria-hidden="!isSidebarOpen && isMobileViewport"
+      >
         <slot
           name="sidebar"
           :close-sidebar="closeSidebar"
@@ -46,7 +158,7 @@ function toggleSidebar() {
         </slot>
       </aside>
 
-      <main class="layout__content" @click="closeSidebar">
+      <main class="layout__content" @click="onContentClick">
         <slot>
           <div class="layout__placeholder">Main content</div>
         </slot>
