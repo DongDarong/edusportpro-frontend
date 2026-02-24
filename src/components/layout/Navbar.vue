@@ -1,9 +1,15 @@
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import logoUrl from '../../assets/images/logo.jpg'
+import { useLanguage } from '../../composables/useLanguage'
 
 const emit = defineEmits(['toggle-sidebar'])
 const hasLogoError = ref(false)
+const { language, setLanguage, t } = useLanguage()
+const selectedLanguage = computed({
+  get: () => language.value,
+  set: (value) => setLanguage(value),
+})
 
 function onLogoError() {
   hasLogoError.value = true
@@ -41,15 +47,26 @@ function onToggleSidebar() {
 
       <slot name="title">
         <div class="navbar__brand">
-          <div class="navbar__brand-top">Organization for Children's</div>
-          <div class="navbar__brand-bottom">Hope Foundation of Cambodia</div>
+          <div class="navbar__brand-top">{{ t('navbar.orgTop') }}</div>
+          <div class="navbar__brand-bottom">{{ t('navbar.orgBottom') }}</div>
         </div>
       </slot>
     </div>
 
     <div class="navbar__right">
       <slot name="actions">
-        <button type="button" class="navbar__icon-btn" aria-label="Notifications">
+        <button type="button" class="navbar__icon-btn" aria-label="Calendar">
+          <svg class="navbar__calendar-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M8 2v3m8-3v3M4 9h16M5 5h14a1 1 0 011 1v13a1 1 0 01-1 1H5a1 1 0 01-1-1V6a1 1 0 011-1z"
+            />
+          </svg>
+        </button>
+
+        <button type="button" class="navbar__icon-btn" :aria-label="t('common.notifications')">
           <svg class="navbar__bell-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
               stroke-linecap="round"
@@ -62,10 +79,10 @@ function onToggleSidebar() {
         </button>
 
         <label class="navbar__lang">
-          <span class="sr-only">Language</span>
-          <select>
-            <option>EN</option>
-            <option>KM</option>
+          <span class="sr-only">{{ t('common.language') }}</span>
+          <select v-model="selectedLanguage">
+            <option value="KH">{{ t('common.khmer') }}</option>
+            <option value="EN">{{ t('common.english') }}</option>
           </select>
         </label>
       </slot>
@@ -74,7 +91,7 @@ function onToggleSidebar() {
         <a href="#profile" class="navbar__profile">
           <div class="navbar__profile-text">
             <div class="navbar__profile-name">Admin User</div>
-            <div class="navbar__profile-role">Super Admin</div>
+            <div class="navbar__profile-role">{{ t('navbar.profileRole') }}</div>
           </div>
           <div class="navbar__avatar">AU</div>
         </a>
@@ -193,6 +210,12 @@ function onToggleSidebar() {
 .navbar__bell-icon {
   width: 1.35rem;
   height: 1.35rem;
+  color: var(--color-text);
+}
+
+.navbar__calendar-icon {
+  width: 1.3rem;
+  height: 1.3rem;
   color: var(--color-text);
 }
 

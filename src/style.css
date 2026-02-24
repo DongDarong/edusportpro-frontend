@@ -9,17 +9,25 @@
 
   /* Supporting text colors */
   --hope-tagline-dark: #1d1d1b;
+  --hope-background-light: #f2f4f7;
   --hope-text-white: #ffffff;
 
+  /* Short aliases */
+  --hope-lime: var(--hope-h-lime-green);
+  --hope-cyan: var(--hope-o-cyan-blue);
+  --hope-red: var(--hope-p-vibrant-red);
+  --hope-yellow: var(--hope-e-golden-yellow);
+  --hope-dark: var(--hope-tagline-dark);
+  --hope-light: var(--hope-background-light);
+
   /* Base tokens */
-  --color-base: var(--hope-h-lime-green);
+  --color-base: var(--hope-cyan);
   --color-text: var(--hope-tagline-dark);
-  --color-surface: var(--hope-text-white);
+  --color-surface: var(--hope-light);
 }
 
 body {
   color: var(--color-text);
   background-color: var(--color-surface);
 }
-
 

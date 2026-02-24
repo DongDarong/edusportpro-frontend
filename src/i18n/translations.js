@@ -1,0 +1,73 @@
+export const LANGUAGE_OPTIONS = ['EN', 'KH']
+
+export const translations = {
+  EN: {
+    common: {
+      language: 'Language',
+      english: 'EN',
+      khmer: 'KH',
+      dashboard: 'Dashboard',
+      resources: 'Resources',
+      helpCenter: 'Help Center',
+      notifications: 'Notifications',
+      logout: 'Logout',
+      guest: 'Guest',
+      notSignedIn: 'Not signed in',
+    },
+    navbar: {
+      orgTop: "Organization for Children's",
+      orgBottom: 'Hope Foundation of Cambodia',
+      profileRole: 'Super Admin',
+    },
+    login: {
+      appName: 'EduSportPro',
+      welcome: 'Welcome Back',
+      description:
+        'Sign in to continue managing coaching, player development, and administration in one place.',
+      email: 'Email',
+      password: 'Password',
+      signIn: 'Sign in',
+      checking: 'Checking...',
+      demoAccounts: 'Demo Accounts',
+      sourceNote: 'Use VITE_USE_MOCK_API=true|false to switch data source.',
+      required: 'Email and password are required.',
+      filledDemo: 'Filled {role} demo account.',
+      loginSuccess: 'Login successful. Redirecting to the {role} dashboard...',
+      unexpected: 'Unexpected error during login.',
+    },
+  },
+  KH: {
+    common: {
+      language: 'ភាសា',
+      english: 'EN',
+      khmer: 'KH',
+      dashboard: 'ផ្ទាំងគ្រប់គ្រង',
+      resources: 'ធនធាន',
+      helpCenter: 'មជ្ឈមណ្ឌលជំនួយ',
+      notifications: 'ការជូនដំណឹង',
+      logout: 'ចាកចេញ',
+      guest: 'ភ្ញៀវ',
+      notSignedIn: 'មិនទាន់ចូលប្រព័ន្ធ',
+    },
+    navbar: {
+      orgTop: 'អង្គការសម្រាប់កុមារ',
+      orgBottom: 'អង្គការក្តីសង្ឃឹមកម្ពុជា',
+      profileRole: 'អ្នកគ្រប់គ្រង',
+    },
+    login: {
+      appName: 'EduSportPro',
+      welcome: 'សូមស្វាគមន៍មកវិញ',
+      description: 'ចូលប្រព័ន្ធដើម្បីគ្រប់គ្រងការបង្វឹក ការអភិវឌ្ឍអ្នកលេង និងការគ្រប់គ្រងទាំងមូល។',
+      email: 'អ៊ីមែល',
+      password: 'ពាក្យសម្ងាត់',
+      signIn: 'ចូលប្រព័ន្ធ',
+      checking: 'កំពុងពិនិត្យ...',
+      demoAccounts: 'គណនីសាកល្បង',
+      sourceNote: 'ប្រើ VITE_USE_MOCK_API=true|false ដើម្បីប្ដូរប្រភពទិន្នន័យ។',
+      required: 'អ៊ីមែល និងពាក្យសម្ងាត់ត្រូវតែបញ្ចូល។',
+      filledDemo: 'បានបំពេញគណនីសាកល្បង {role}។',
+      loginSuccess: 'ចូលប្រព័ន្ធជោគជ័យ។ កំពុងបញ្ជូនទៅផ្ទាំង {role}...',
+      unexpected: 'មានបញ្ហាមិនរំពឹងទុកពេលចូលប្រព័ន្ធ។',
+    },
+  },
+}

@@ -3,9 +3,12 @@ import { reactive, computed, ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/auth.js'
 import { getUsers, loginWithEmail } from '../../services/userService'
+import hopeLogo from '../../assets/images/logo.jpg'
+import { useLanguage } from '../../composables/useLanguage'
 
 const router = useRouter()
-const { setToken } = useAuthStore()
+const { state, setToken } = useAuthStore()
+const { language, setLanguage, t } = useLanguage()
 const loading = ref(false)
 const usersList = ref([])
 const alert = reactive({
@@ -18,10 +21,34 @@ const form = reactive({
   password: '',
 })
 
-const demoCredentials = computed(() => usersList.value[0] ?? { email: '', password: '' })
+const demoUsers = computed(() => usersList.value.filter((user) => user?.email && user?.password))
 const canSubmit = computed(() => form.email.trim().length > 0 && form.password.trim().length > 0)
+const selectedLanguage = computed({
+  get: () => language.value,
+  set: (value) => setLanguage(value),
+})
+
+function dashboardForRole(role) {
+  return {
+    admin: '/admin/dashboard',
+    coach: '/coach/dashboard',
+    player: '/player/dashboard',
+  }[role] ?? '/login'
+}
+
+function useDemoAccount(user) {
+  form.email = user.email
+  form.password = user.password
+  alert.error = ''
+  alert.success = t('login.filledDemo', { role: user.role })
+}
 
 onMounted(async () => {
+  if (state.user?.role) {
+    router.replace(dashboardForRole(state.user.role))
+    return
+  }
+
   try {
     const { data } = await getUsers()
     usersList.value = data?.users ?? []
@@ -33,7 +60,7 @@ onMounted(async () => {
 async function handleSubmit(event) {
   event.preventDefault()
   if (!canSubmit.value) {
-    alert.error = 'Email and password are required.'
+    alert.error = t('login.required')
     alert.success = ''
     return
   }
@@ -46,16 +73,11 @@ async function handleSubmit(event) {
     const { token, user } = await loginWithEmail(form.email, form.password)
     setToken(token, user)
 
-    const destination = {
-      admin: '/admin/dashboard',
-      coach: '/coach/dashboard',
-      player: '/player/dashboard',
-    }[user?.role] ?? '/login'
-
-    alert.success = `Login successful. Redirecting to the ${user?.role ?? 'default'} dashboard...`
-    setTimeout(() => router.replace(destination), 700)
+    const destination = dashboardForRole(user?.role)
+    alert.success = t('login.loginSuccess', { role: user?.role ?? 'default' })
+    setTimeout(() => router.replace(destination), 500)
   } catch (error) {
-    alert.error = error instanceof Error ? error.message : 'Unexpected error during login.'
+    alert.error = error instanceof Error ? error.message : t('login.unexpected')
   } finally {
     loading.value = false
   }
@@ -63,56 +85,88 @@ async function handleSubmit(event) {
 </script>
 
 <template>
-  <div class="auth-page">
-    <div class="auth-card">
-      <form class="auth-form" @submit="handleSubmit" novalidate>
-        <label>
-          <span>Email</span>
-          <input
-            v-model="form.email"
-            type="email"
-            required
-            autocomplete="username"
-            placeholder="you@example.com"
-            :disabled="loading"
-          />
+  <main class="auth-page">
+    <section class="auth-shell">
+      <aside class="auth-hero">
+        <img :src="hopeLogo" alt="Hope for Cambodian children" class="auth-hero__logo" />
+        <p class="auth-hero__eyebrow">{{ t('login.appName') }}</p>
+        <h1>{{ t('login.welcome') }}</h1>
+        <p>
+          {{ t('login.description') }}
+        </p>
+
+        <div class="auth-hero__swatches" aria-hidden="true">
+          <span class="swatch swatch--lime"></span>
+          <span class="swatch swatch--cyan"></span>
+          <span class="swatch swatch--red"></span>
+          <span class="swatch swatch--yellow"></span>
+        </div>
+
+        <label class="auth-hero__language">
+          <span>{{ t('common.language') }}</span>
+          <select v-model="selectedLanguage">
+            <option value="KH">{{ t('common.khmer') }}</option>
+            <option value="EN">{{ t('common.english') }}</option>
+          </select>
         </label>
+      </aside>
 
-        <label>
-          <span>Password</span>
-          <input
-            v-model="form.password"
-            type="password"
-            required
-            autocomplete="current-password"
-            placeholder="********"
-            :disabled="loading"
-          />
-        </label>
+      <section class="auth-card" aria-label="Login form">
+        <form class="auth-form" @submit="handleSubmit" novalidate>
+          <label>
+            <span>{{ t('login.email') }}</span>
+            <input
+              v-model="form.email"
+              type="email"
+              required
+              autocomplete="username"
+              placeholder="you@example.com"
+              :disabled="loading"
+            />
+          </label>
 
-        <button type="submit" class="primary" :disabled="!canSubmit || loading">
-          <span v-if="loading">Checking...</span>
-          <span v-else>Sign in</span>
-        </button>
+          <label>
+            <span>{{ t('login.password') }}</span>
+            <input
+              v-model="form.password"
+              type="password"
+              required
+              autocomplete="current-password"
+              placeholder="********"
+              :disabled="loading"
+            />
+          </label>
 
-        <p class="note">
-          Uses <code>src/services/userService.js</code> with env switch
-          <code>VITE_USE_MOCK_API=true|false</code>.
-        </p>
-        <p class="note" v-if="demoCredentials.email">
-          Demo credentials: <strong>{{ demoCredentials.email }}</strong> /
-          <strong>{{ demoCredentials.password }}</strong>
-        </p>
-        <p class="note">
-          Admin logins go to the admin dashboard, coach logins go to the coach dashboard, and player
-          logins go to the player dashboard.
-        </p>
+          <button type="submit" class="primary" :disabled="!canSubmit || loading">
+            <span v-if="loading">{{ t('login.checking') }}</span>
+            <span v-else>{{ t('login.signIn') }}</span>
+          </button>
 
-        <p v-if="alert.error" class="alert error">{{ alert.error }}</p>
-        <p v-if="alert.success" class="alert success">{{ alert.success }}</p>
-      </form>
-    </div>
-  </div>
+          <div class="demo" v-if="demoUsers.length">
+            <p class="demo__title">{{ t('login.demoAccounts') }}</p>
+            <div class="demo__list">
+              <button
+                v-for="user in demoUsers"
+                :key="user.email"
+                type="button"
+                class="demo__item"
+                @click="useDemoAccount(user)"
+                :disabled="loading"
+              >
+                <strong>{{ user.role }}</strong>
+                <span>{{ user.email }}</span>
+              </button>
+            </div>
+          </div>
+
+          <p class="note">{{ t('login.sourceNote') }}</p>
+
+          <p v-if="alert.error" class="alert error">{{ alert.error }}</p>
+          <p v-if="alert.success" class="alert success">{{ alert.success }}</p>
+        </form>
+      </section>
+    </section>
+  </main>
 </template>
 
 <style scoped>
@@ -122,103 +176,257 @@ async function handleSubmit(event) {
 
 .auth-page {
   min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-  background: linear-gradient(180deg, #0b1d2e 0%, #102840 60%, #0a1220 100%);
+  padding: 1.5rem;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 15% 18%, color-mix(in srgb, var(--hope-cyan) 14%, transparent) 0 26%, transparent 26%),
+    radial-gradient(circle at 85% 82%, color-mix(in srgb, var(--hope-lime) 15%, transparent) 0 20%, transparent 20%),
+    var(--hope-light);
 }
 
-.auth-card {
-  width: min(460px, 90vw);
-  background: #0e1a2a;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 1.25rem;
+.auth-shell {
+  width: min(980px, 100%);
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  border-radius: 1.2rem;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--hope-dark) 14%, transparent);
+  box-shadow: 0 24px 48px rgba(29, 29, 27, 0.12);
+  background: #fff;
+}
+
+.auth-hero {
   padding: 2rem;
-  box-shadow: 0 20px 45px rgba(3, 8, 20, 0.6);
-  color: #e2ecff;
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--hope-cyan) 14%, white), color-mix(in srgb, var(--hope-light) 70%, white));
+  border-right: 1px solid color-mix(in srgb, var(--hope-dark) 8%, transparent);
+  display: grid;
+  align-content: start;
+  gap: 0.9rem;
+}
+
+.auth-hero__logo {
+  width: 170px;
+  max-width: 80%;
+  height: auto;
+  border-radius: 0.45rem;
+  background: #fff;
+  padding: 0.25rem;
+  border: 1px solid color-mix(in srgb, var(--hope-dark) 10%, transparent);
+}
+
+.auth-hero__eyebrow {
+  margin: 0;
+  color: var(--hope-red);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.auth-hero h1 {
+  margin: 0;
+  color: var(--hope-dark);
+  font-size: clamp(1.7rem, 2.6vw, 2.3rem);
+  line-height: 1.1;
+}
+
+.auth-hero p {
+  margin: 0;
+  color: color-mix(in srgb, var(--hope-dark) 82%, white);
+  line-height: 1.45;
+}
+
+.auth-hero__swatches {
+  margin-top: 0.7rem;
+  display: flex;
+  gap: 0.55rem;
+}
+
+.auth-hero__language {
+  margin-top: 0.6rem;
+  display: grid;
+  gap: 0.3rem;
+  width: min(180px, 100%);
+}
+
+.auth-hero__language span {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: color-mix(in srgb, var(--hope-dark) 75%, white);
+}
+
+.auth-hero__language select {
+  border: 1px solid color-mix(in srgb, var(--hope-dark) 18%, transparent);
+  border-radius: 0.62rem;
+  background: #fff;
+  color: var(--hope-dark);
+  padding: 0.46rem 0.55rem;
+}
+
+.swatch {
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.swatch--lime { background: var(--hope-lime); }
+.swatch--cyan { background: var(--hope-cyan); }
+.swatch--red { background: var(--hope-red); }
+.swatch--yellow { background: var(--hope-yellow); }
+
+.auth-card {
+  padding: 2rem;
+  background: #fff;
 }
 
 .auth-form {
-  display: flex;
-  flex-direction: column;
-  gap: 0.9rem;
+  display: grid;
+  gap: 0.8rem;
 }
 
 label span {
   display: block;
-  margin-bottom: 0.3rem;
-  font-size: 0.75rem;
-  letter-spacing: 0.05em;
+  margin-bottom: 0.28rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.7);
+  color: color-mix(in srgb, var(--hope-dark) 78%, white);
 }
 
 input {
   width: 100%;
-  padding: 0.85rem 1rem;
-  border-radius: 0.85rem;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  background: rgba(5, 11, 20, 0.65);
-  color: #fff;
-  font-size: 1rem;
-  transition: border-color 0.2s ease;
+  padding: 0.78rem 0.88rem;
+  border-radius: 0.72rem;
+  border: 1px solid color-mix(in srgb, var(--hope-dark) 17%, transparent);
+  background: color-mix(in srgb, var(--hope-light) 78%, white);
+  color: var(--hope-dark);
+  font-size: 0.98rem;
 }
 
 input:focus {
-  border-color: #74d0ff;
   outline: none;
+  border-color: var(--hope-cyan);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--hope-cyan) 16%, transparent);
 }
 
-button.primary {
+.primary {
   width: 100%;
-  padding: 0.85rem 1rem;
-  border-radius: 0.95rem;
+  padding: 0.82rem 0.88rem;
   border: 0;
-  font-size: 1rem;
+  border-radius: 0.78rem;
+  font-size: 0.98rem;
   font-weight: 700;
-  color: #071229;
-  background: linear-gradient(120deg, #74d0ff, #50a8ff);
+  color: #fff;
+  background: linear-gradient(120deg, var(--hope-cyan), color-mix(in srgb, var(--hope-cyan) 68%, var(--hope-dark)));
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-button.primary:disabled {
+.primary:disabled {
+  opacity: 0.65;
   cursor: not-allowed;
-  opacity: 0.6;
 }
 
-button.primary:not(:disabled):hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 18px rgba(43, 127, 228, 0.35);
+.primary:not(:disabled):hover {
+  filter: brightness(1.03);
+}
+
+.demo {
+  border: 1px dashed color-mix(in srgb, var(--hope-dark) 20%, transparent);
+  border-radius: 0.75rem;
+  padding: 0.72rem;
+  display: grid;
+  gap: 0.55rem;
+  background: color-mix(in srgb, var(--hope-light) 64%, white);
+}
+
+.demo__title {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--hope-dark);
+}
+
+.demo__list {
+  display: grid;
+  gap: 0.42rem;
+}
+
+.demo__item {
+  border: 1px solid color-mix(in srgb, var(--hope-dark) 16%, transparent);
+  border-radius: 0.62rem;
+  padding: 0.52rem 0.62rem;
+  background: #fff;
+  color: var(--hope-dark);
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.demo__item strong {
+  text-transform: uppercase;
+  color: var(--hope-cyan);
+  font-size: 0.74rem;
+  letter-spacing: 0.05em;
+}
+
+.demo__item:hover {
+  border-color: var(--hope-cyan);
+  background: color-mix(in srgb, var(--hope-cyan) 6%, white);
 }
 
 .note {
   margin: 0;
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.82rem;
+  color: color-mix(in srgb, var(--hope-dark) 72%, white);
 }
 
 .alert {
-  padding: 0.6rem 0.8rem;
-  border-radius: 0.65rem;
-  font-size: 0.85rem;
   margin: 0;
+  border-radius: 0.62rem;
+  padding: 0.58rem 0.72rem;
+  font-size: 0.84rem;
 }
 
 .alert.error {
-  background: rgba(255, 74, 74, 0.1);
-  color: #ff7e7e;
+  background: color-mix(in srgb, var(--hope-red) 14%, white);
+  color: #8e1418;
 }
 
 .alert.success {
-  background: rgba(71, 226, 176, 0.12);
-  color: #67d8b2;
+  background: color-mix(in srgb, var(--hope-lime) 24%, white);
+  color: #2f5f1f;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 920px) {
+  .auth-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-hero {
+    border-right: 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--hope-dark) 8%, transparent);
+  }
+}
+
+@media (max-width: 520px) {
+  .auth-page {
+    padding: 0.85rem;
+  }
+
+  .auth-hero,
   .auth-card {
-    padding: 1.5rem;
+    padding: 1.2rem;
+  }
+
+  .demo__item {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
 </style>

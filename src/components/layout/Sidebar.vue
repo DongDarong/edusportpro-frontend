@@ -6,15 +6,17 @@ import AdminSidebarSection from './AdminSidebarSection.vue'
 import CoachSidebarSection from './CoachSidebarSection.vue'
 import PlayerSidebarSection from './PlayerSidebarSection.vue'
 import { useAuthStore } from '../../stores/auth.js'
+import { useLanguage } from '../../composables/useLanguage'
 
 const emit = defineEmits(['close'])
 const route = useRoute()
 const router = useRouter()
 const { state, clearAuth } = useAuthStore()
+const { t } = useLanguage()
 
 const secondaryLinks = [
-  { label: 'Help Center', to: '/' },
-  { label: 'Notifications', to: '/notifications' },
+  { key: 'common.helpCenter', to: '/' },
+  { key: 'common.notifications', to: '/notifications' },
 ]
 
 const currentPath = computed(() => route.path)
@@ -27,12 +29,17 @@ function isRoleActive(role) {
   return state.user?.role === role
 }
 
+function shouldShowRole(role) {
+  return state.user?.role === role
+}
+
 function onClose() {
   emit('close')
 }
 
 function handleLogout() {
   clearAuth()
+  onClose()
   router.replace({ name: 'login' })
 }
 </script>
@@ -49,23 +56,26 @@ function handleLogout() {
         </button>
       </div>
       <div class="sidebar__user">
-        
-
+        <p class="sidebar__user-name">{{ state.user?.name || t('common.guest') }}</p>
+        <p class="sidebar__user-role">{{ state.user?.role ? state.user.role.toUpperCase() : t('common.notSignedIn') }}</p>
       </div>
     </div>
 
     <div class="sidebar__menu">
       <AdminSidebarSection
+        v-if="shouldShowRole('admin')"
         :active-path="currentPath"
         :active-role="isRoleActive('admin')"
         @navigate="onClose"
       />
       <CoachSidebarSection
+        v-if="shouldShowRole('coach')"
         :active-path="currentPath"
         :active-role="isRoleActive('coach')"
         @navigate="onClose"
       />
       <PlayerSidebarSection
+        v-if="shouldShowRole('player')"
         :active-path="currentPath"
         :active-role="isRoleActive('player')"
         @navigate="onClose"
@@ -73,7 +83,7 @@ function handleLogout() {
     </div>
 
     <section class="sidebar__secondary" aria-label="Secondary navigation">
-      <h2>Resources</h2>
+      <h2>{{ t('common.resources') }}</h2>
       <ul>
         <li v-for="link in secondaryLinks" :key="link.to">
           <RouterLink
@@ -82,19 +92,16 @@ function handleLogout() {
             :class="{ 'sidebar__link--active': isActive(link.to) }"
             @click="onClose"
           >
-            {{ link.label }}
+            {{ t(link.key) }}
           </RouterLink>
         </li>
       </ul>
     </section>
 
     <div class="sidebar__footer">
-      <slot name="footer">
-        
-        <button v-if="state.user" type="button" class="sidebar__logout" @click="handleLogout">
-          Logout
-        </button>
-      </slot>
+      <button v-if="state.user" type="button" class="sidebar__logout" @click="handleLogout">
+        {{ t('common.logout') }}
+      </button>
     </div>
   </nav>
 </template>
@@ -158,13 +165,20 @@ function handleLogout() {
 }
 
 .sidebar__logout {
-  border: 0;
-  background: transparent;
-  color: var(--hope-o-cyan-blue);
-  padding: 0;
-  font-size: 0.75rem;
-  text-align: left;
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.04);
+  color: #fff;
+  padding: 0.55rem 0.7rem;
+  font-size: 0.82rem;
+  border-radius: 0.6rem;
+  text-align: center;
   cursor: pointer;
+}
+
+.sidebar__logout:hover {
+  border-color: var(--hope-o-cyan-blue);
+  background: color-mix(in oklab, var(--hope-o-cyan-blue) 12%, transparent);
 }
 
 .sidebar__menu {

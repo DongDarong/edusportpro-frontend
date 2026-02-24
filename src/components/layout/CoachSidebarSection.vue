@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import { useLanguage } from '../../composables/useLanguage'
 
 const props = defineProps({
   activePath: {
@@ -15,6 +16,7 @@ const props = defineProps({
 const emit = defineEmits(['navigate'])
 const dashboardPath = '/coach/dashboard'
 const isActive = computed(() => props.activePath === dashboardPath)
+const { t } = useLanguage()
 
 function onNavigate() {
   emit('navigate')
@@ -30,7 +32,7 @@ function onNavigate() {
       :class="{ 'role-section__link--active': isActive }"
       @click="onNavigate"
     >
-      Dashboard
+      {{ t('common.dashboard') }}
     </RouterLink>
   </section>
 </template>
