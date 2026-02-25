@@ -41,4 +41,25 @@ const props = defineProps({
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 0.9rem;
 }
+
+@media (max-width: 640px) {
+  .highlights {
+    gap: 0.72rem;
+  }
+
+  .highlights__grid {
+    grid-template-columns: 1fr;
+    gap: 0.72rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .highlights {
+    gap: 0.62rem;
+  }
+
+  .highlights__grid {
+    gap: 0.62rem;
+  }
+}
 </style>

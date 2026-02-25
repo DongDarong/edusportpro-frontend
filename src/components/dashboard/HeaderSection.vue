@@ -35,4 +35,31 @@ const props = defineProps({
   font-size: 0.95rem;
   color: color-mix(in srgb, var(--hope-dark) 62%, white);
 }
+
+@media (max-width: 640px) {
+  .header-section {
+    margin-bottom: 0.7rem;
+  }
+
+  .header-section__title {
+    font-size: 1.2rem;
+    line-height: 1.25;
+  }
+
+  .header-section__subtitle {
+    margin-top: 0.3rem;
+    font-size: 0.84rem;
+    line-height: 1.35;
+  }
+}
+
+@media (max-width: 420px) {
+  .header-section__title {
+    font-size: 1.08rem;
+  }
+
+  .header-section__subtitle {
+    font-size: 0.8rem;
+  }
+}
 </style>

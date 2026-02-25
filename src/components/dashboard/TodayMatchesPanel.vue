@@ -60,4 +60,57 @@ const todayMatches = [
   font-size: 0.8rem;
   color: color-mix(in srgb, var(--hope-dark) 62%, white);
 }
+
+@media (max-width: 640px) {
+  .panel {
+    padding: 0.78rem;
+    border-radius: 0.78rem;
+  }
+
+  .panel h4 {
+    margin-bottom: 0.58rem;
+    font-size: 0.92rem;
+  }
+
+  .panel__list {
+    gap: 0.48rem;
+  }
+
+  .panel__row {
+    padding: 0.48rem 0.5rem;
+    gap: 0.55rem;
+  }
+
+  .panel__main {
+    font-size: 0.8rem;
+  }
+
+  .panel__sub {
+    font-size: 0.72rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .panel {
+    padding: 0.68rem;
+  }
+
+  .panel h4 {
+    margin-bottom: 0.52rem;
+    font-size: 0.86rem;
+  }
+
+  .panel__row {
+    padding: 0.42rem 0.45rem;
+    border-radius: 0.52rem;
+  }
+
+  .panel__main {
+    font-size: 0.74rem;
+  }
+
+  .panel__sub {
+    font-size: 0.68rem;
+  }
+}
 </style>

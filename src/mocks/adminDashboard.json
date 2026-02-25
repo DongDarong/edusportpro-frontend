@@ -1,20 +1,41 @@
 {
   "summaryCards": [
-    { "title": "Total Users", "value": "100", "status": "success", "label": "+8.2% this month" },
-    { "title": "Active Coaches", "value": "96", "status": "info", "label": "Stable this week" },
-    { "title": "Pending Approvals", "value": "14", "status": "warning", "label": "Needs review" },
-    { "title": "System Alerts", "value": "3", "status": "error", "label": "Immediate attention" }
+    { "title": "Total Users", "value": "248", "status": "success", "label": "+12.4% this month" },
+    { "title": "Active Coaches", "value": "21", "status": "info", "label": "2 online right now" },
+    { "title": "Pending Approvals", "value": "9", "status": "warning", "label": "Review queue updated" },
+    { "title": "Total Teams", "value": "6", "status": "success", "label": "+2 teams this season" },
+    { "title": "Matches Played", "value": "48", "status": "info", "label": "8 this week" },
+    { "title": "Low Stock Items", "value": "18", "status": "warning", "label": "Jerseys and cones" },
+    { "title": "Upcoming Events", "value": "4", "status": "pending", "label": "Next 10 days" }
   ],
   "recentActivities": [
-    { "id": 1, "message": "Coach account \"Sok Dara\" approved", "time": "5 minutes ago", "status": "success" },
-    { "id": 2, "message": "New player registration awaiting verification", "time": "17 minutes ago", "status": "pending" },
-    { "id": 3, "message": "Password reset requested by admin user", "time": "34 minutes ago", "status": "info" },
-    { "id": 4, "message": "Program report export failed", "time": "1 hour ago", "status": "error" }
+    { "id": 1, "message": "Team registration approved: Angkor Lions", "time": "4 minutes ago", "status": "success" },
+    { "id": 2, "message": "New player transfer request submitted", "time": "19 minutes ago", "status": "pending" },
+    { "id": 3, "message": "Training schedule updated by Coach Sok Dara", "time": "42 minutes ago", "status": "info" },
+    { "id": 4, "message": "Failed report export retried successfully", "time": "1 hour ago", "status": "success" },
+    { "id": 5, "message": "Equipment restock alert: training balls below threshold", "time": "2 hours ago", "status": "warning" }
   ],
   "teamsOverview": [
-    { "id": 1, "name": "Phnom Falcons", "coach": "Sok Dara", "players": 18, "status": "success" },
-    { "id": 2, "name": "River Strikers", "coach": "Pich Srey", "players": 16, "status": "info" },
-    { "id": 3, "name": "Capital Tigers", "coach": "Vannak Ly", "players": 20, "status": "warning" },
-    { "id": 4, "name": "Mekong Wolves", "coach": "Nita Chan", "players": 14, "status": "pending" }
+    { "id": 1, "name": "Phnom Falcons", "coach": "Sok Dara", "players": 19, "status": "success" },
+    { "id": 2, "name": "River Strikers", "coach": "Pich Srey", "players": 18, "status": "info" },
+    { "id": 3, "name": "Capital Tigers", "coach": "Vannak Ly", "players": 20, "status": "success" },
+    { "id": 4, "name": "Mekong Wolves", "coach": "Nita Chan", "players": 17, "status": "warning" },
+    { "id": 5, "name": "Tonle Warriors", "coach": "Chea Rina", "players": 18, "status": "info" },
+    { "id": 6, "name": "Angkor Lions", "coach": "Keo Sophal", "players": 16, "status": "pending" }
+  ],
+  "standingsPreview": [
+    { "id": 1, "position": 1, "name": "Phnom Falcons", "played": 10, "wins": 8, "draws": 1, "losses": 1, "goalsFor": 24, "goalsAgainst": 9, "goalDifference": 15, "points": 25 },
+    { "id": 2, "position": 2, "name": "Capital Tigers", "played": 10, "wins": 7, "draws": 2, "losses": 1, "goalsFor": 21, "goalsAgainst": 11, "goalDifference": 10, "points": 23 },
+    { "id": 3, "position": 3, "name": "River Strikers", "played": 10, "wins": 6, "draws": 2, "losses": 2, "goalsFor": 19, "goalsAgainst": 12, "goalDifference": 7, "points": 20 },
+    { "id": 4, "position": 4, "name": "Tonle Warriors", "played": 10, "wins": 4, "draws": 3, "losses": 3, "goalsFor": 14, "goalsAgainst": 13, "goalDifference": 1, "points": 15 },
+    { "id": 5, "position": 5, "name": "Mekong Wolves", "played": 10, "wins": 3, "draws": 2, "losses": 5, "goalsFor": 12, "goalsAgainst": 16, "goalDifference": -4, "points": 11 },
+    { "id": 6, "position": 6, "name": "Angkor Lions", "played": 10, "wins": 1, "draws": 2, "losses": 7, "goalsFor": 8, "goalsAgainst": 23, "goalDifference": -15, "points": 5 }
+  ],
+  "topScorers": [
+    { "id": 1, "name": "Chan Vanna", "team": "Phnom Falcons", "goals": 12 },
+    { "id": 2, "name": "Kim Rith", "team": "Capital Tigers", "goals": 10 },
+    { "id": 3, "name": "Ly Sopheak", "team": "River Strikers", "goals": 9 },
+    { "id": 4, "name": "Chea Samnang", "team": "Tonle Warriors", "goals": 7 },
+    { "id": 5, "name": "Nita Dara", "team": "Mekong Wolves", "goals": 6 }
   ]
 }

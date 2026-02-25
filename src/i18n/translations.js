@@ -13,6 +13,7 @@ export const translations = {
       logout: 'Logout',
       guest: 'Guest',
       notSignedIn: 'Not signed in',
+      search: 'Search...',
     },
     navbar: {
       orgTop: "Organization for Children's",
@@ -48,6 +49,7 @@ export const translations = {
       logout: 'ចាកចេញ',
       guest: 'ភ្ញៀវ',
       notSignedIn: 'មិនទាន់ចូលប្រព័ន្ធ',
+      search: 'ស្វែងរក...',
     },
     navbar: {
       orgTop: 'អង្គការសម្រាប់កុមារ',

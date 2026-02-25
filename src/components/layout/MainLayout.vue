@@ -192,7 +192,7 @@ onBeforeUnmount(() => {
 }
 
 .layout__sidebar {
-  width: 240px;
+  width: 280px;
   border-right: 1px solid var(--hope-o-cyan-blue);
   background-color: var(--color-surface);
   padding: 1rem;
@@ -296,6 +296,27 @@ onBeforeUnmount(() => {
 
   .layout__content {
     padding: 0.65rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .layout__navbar {
+    height: 50px;
+    padding: 0 0.45rem;
+  }
+
+  .layout__sidebar {
+    width: min(88vw, 300px);
+    padding: 0.58rem;
+    top: 50px;
+  }
+
+  .layout__overlay {
+    inset: 50px 0 0 0;
+  }
+
+  .layout__content {
+    padding: 0.58rem;
   }
 }
 

@@ -100,4 +100,51 @@ const props = defineProps({
 .pill--warning { background: var(--hope-yellow); color: #6d5700; }
 .pill--pending { background: #3d93b5; }
 .pill--error { background: var(--hope-red); }
+
+@media (max-width: 640px) {
+  .panel {
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+  }
+
+  .panel h4 {
+    margin-bottom: 0.5rem;
+    font-size: 0.92rem;
+  }
+
+  .panel__list {
+    gap: 0.45rem;
+  }
+
+  .panel__row {
+    padding: 0.48rem;
+    border-radius: 0.5rem;
+  }
+
+  .panel__main {
+    font-size: 0.82rem;
+    line-height: 1.28;
+  }
+
+  .panel__sub {
+    font-size: 0.72rem;
+  }
+
+  .panel__state {
+    font-size: 0.78rem;
+  }
+
+  .pill {
+    font-size: 0.62rem;
+    padding: 0.15rem 0.38rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .panel__row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+}
 </style>

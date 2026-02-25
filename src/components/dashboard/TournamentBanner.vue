@@ -49,4 +49,60 @@
   font-weight: 700;
   cursor: pointer;
 }
+
+@media (max-width: 640px) {
+  .banner {
+    padding: 0.82rem;
+    border-radius: 0.8rem;
+    align-items: flex-start;
+    gap: 0.7rem;
+  }
+
+  .banner__eyebrow {
+    font-size: 0.66rem;
+    letter-spacing: 0.1em;
+  }
+
+  .banner__title {
+    margin: 0.16rem 0;
+    font-size: 1.05rem;
+  }
+
+  .banner__subtitle {
+    font-size: 0.8rem;
+  }
+
+  .banner__cta {
+    padding: 0.45rem 0.68rem;
+    font-size: 0.78rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .banner {
+    padding: 0.72rem;
+    gap: 0.62rem;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .banner__eyebrow {
+    font-size: 0.62rem;
+  }
+
+  .banner__title {
+    font-size: 0.94rem;
+  }
+
+  .banner__subtitle {
+    font-size: 0.74rem;
+  }
+
+  .banner__cta {
+    width: 100%;
+    padding: 0.44rem 0.62rem;
+    border-radius: 0.52rem;
+    font-size: 0.74rem;
+  }
+}
 </style>

@@ -11,6 +11,8 @@ import TournamentHighlights from '../../../components/dashboard/TournamentHighli
 import LoadingSpinner from '../../../components/common/LoadingSpinner.vue'
 import RecentActivities from '../../../components/dashboard/RecentActivities.vue'
 import TeamsOverview from '../../../components/dashboard/TeamsOverview.vue'
+import StandingsPreview from '../../../components/dashboard/StandingsPreview.vue'
+import TopScorers from '../../../components/dashboard/TopScorers.vue'
 
 import { getAdminDashboard } from '../../../services/adminService'
 
@@ -19,6 +21,8 @@ const loadError = ref('')
 const summaryCards = ref([])
 const recentActivities = ref([])
 const teamsOverview = ref([])
+const standingsPreview = ref([])
+const topScorers = ref([])
 
 async function loadDashboard() {
   loading.value = true
@@ -29,6 +33,8 @@ async function loadDashboard() {
     summaryCards.value = data?.summaryCards ?? []
     recentActivities.value = data?.recentActivities ?? []
     teamsOverview.value = data?.teamsOverview ?? []
+    standingsPreview.value = data?.standingsPreview ?? []
+    topScorers.value = data?.topScorers ?? []
   } catch (error) {
     loadError.value = error instanceof Error ? error.message : 'Unable to load admin dashboard data.'
   } finally {
@@ -44,7 +50,7 @@ onMounted(loadDashboard)
     <template #navbar="{ toggleSidebar }">
       <Navbar @toggle-sidebar="toggleSidebar">
         <template #title>
-          <h1 class="page-title">Admin Dashboard</h1>
+          <h1 class="m-0 text-[1.15rem] font-bold max-[640px]:text-base">Admin Dashboard</h1>
         </template>
       </Navbar>
     </template>
@@ -53,83 +59,65 @@ onMounted(loadDashboard)
       <Sidebar @close="closeSidebar" />
     </template>
 
-    <section class="dashboard">
+    <section class="grid gap-4 max-[640px]:gap-3.5 max-[420px]:gap-2.5">
       <HeaderSection
         title="Dashboard Overview"
         subtitle="Welcome back, here's what's happening with your teams."
       />
 
-      <div v-if="loading" class="dashboard__loading">
+      <div v-if="loading" class="flex min-h-[260px] items-center justify-center max-[640px]:min-h-[180px]">
         <LoadingSpinner label="Loading admin dashboard" size="lg" />
       </div>
 
-      <div v-else-if="loadError" class="dashboard__error">
+      <div
+        v-else-if="loadError"
+        class="grid min-h-[180px] place-items-center gap-2.5 rounded-[0.85rem] border border-[color-mix(in_srgb,var(--hope-red)_35%,white)] bg-[color-mix(in_srgb,var(--hope-red)_8%,white)] p-4 text-center text-[#8e1418] max-[640px]:min-h-[140px] max-[640px]:p-3.5 max-[640px]:text-[0.88rem]"
+      >
         <p>{{ loadError }}</p>
-        <button type="button" class="dashboard__retry" @click="loadDashboard">Retry</button>
+        <button
+          type="button"
+          class="cursor-pointer rounded-[0.55rem] border border-[color-mix(in_srgb,var(--hope-red)_50%,white)] bg-white px-3 py-1.5 font-semibold text-[#8e1418] transition-all hover:bg-red-50 max-[640px]:px-2.5 max-[640px]:py-1.5 max-[640px]:text-[0.82rem]"
+          @click="loadDashboard"
+        >
+          Retry
+        </button>
       </div>
 
       <template v-else>
         <StatsCards :cards="summaryCards" :loading="false" :error="''" />
 
         <TournamentHighlights
+          class="[&_.highlights__grid]:max-[640px]:grid-cols-1 [&_.highlights__grid]:max-[640px]:gap-3"
           :activities="recentActivities"
           :loading="false"
           :error="''"
         />
 
-        <div class="dashboard__detail-grid">
-          <RecentActivities :activities="recentActivities" :loading="false" :error="''" />
-          <TeamsOverview :teams="teamsOverview" />
+        <div class="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-4 max-[640px]:grid-cols-1 max-[640px]:gap-3.5 max-[420px]:gap-2.5">
+          <RecentActivities
+            class="max-[640px]:!p-3.5 max-[420px]:!rounded-[0.75rem] max-[420px]:!p-3"
+            :activities="recentActivities"
+            :loading="false"
+            :error="''"
+          />
+          <TeamsOverview
+            class="max-[640px]:!p-3.5 max-[420px]:!rounded-[0.75rem] max-[420px]:!p-3 [&_table]:max-[640px]:text-[0.82rem]"
+            :teams="teamsOverview"
+          />
+        </div>
+
+        <div class="grid grid-cols-[minmax(0,2fr)_minmax(260px,1fr)] gap-4 max-[960px]:grid-cols-1 max-[640px]:gap-3.5 max-[420px]:gap-2.5">
+          <StandingsPreview
+            class="max-[420px]:!rounded-[0.75rem] max-[420px]:!p-3"
+            :standings="standingsPreview"
+          />
+          <TopScorers
+            class="max-[420px]:!rounded-[0.75rem] max-[420px]:!p-3"
+            :scorers="topScorers"
+          />
         </div>
       </template>
     </section>
   </MainLayout>
 </template>
 
-<style scoped>
-.page-title {
-  margin: 0;
-  font-size: 1.15rem;
-  font-weight: 700;
-}
-
-.dashboard {
-  display: grid;
-  gap: 1rem;
-}
-
-.dashboard__loading {
-  min-height: 260px;
-  display: grid;
-  place-items: center;
-}
-
-.dashboard__error {
-  min-height: 180px;
-  display: grid;
-  place-items: center;
-  gap: 0.6rem;
-  text-align: center;
-  border: 1px solid color-mix(in srgb, var(--hope-red) 35%, white);
-  border-radius: 0.85rem;
-  background: color-mix(in srgb, var(--hope-red) 8%, white);
-  color: #8e1418;
-  padding: 1rem;
-}
-
-.dashboard__retry {
-  border: 1px solid color-mix(in srgb, var(--hope-red) 50%, white);
-  background: #fff;
-  color: #8e1418;
-  border-radius: 0.55rem;
-  padding: 0.45rem 0.8rem;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.dashboard__detail-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1rem;
-}
-</style>

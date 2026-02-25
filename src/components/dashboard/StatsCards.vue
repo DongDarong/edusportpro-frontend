@@ -37,6 +37,11 @@ function icon(status) {
 
   return 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
 }
+
+function statusLabel(status) {
+  const value = (status || 'info').toLowerCase()
+  return value.charAt(0).toUpperCase() + value.slice(1)
+}
 </script>
 
 <template>
@@ -57,37 +62,44 @@ function icon(status) {
           </span>
         </div>
         <p class="stats__value">{{ card.value }}</p>
-        <p class="stats__meta">{{ card.label }}</p>
+        <div class="stats__foot">
+          <p class="stats__meta">{{ card.label }}</p>
+          <span class="stats__badge">{{ statusLabel(card.status) }}</span>
+        </div>
       </article>
+      <article v-if="!cards.length" class="stats__empty">No summary cards available.</article>
     </div>
   </section>
 </template>
 
 <style scoped>
 .stats__state {
-  border: 1px dashed rgba(0, 0, 0, 0.2);
-  border-radius: 0.8rem;
+  border: 1px dashed #c7d6e3;
+  border-radius: 0.9rem;
   padding: 1rem;
-  color: color-mix(in srgb, var(--hope-dark) 70%, white);
+  color: #5a7082;
+  background: #fbfdff;
 }
 
 .stats__state--error {
   border-color: color-mix(in srgb, var(--hope-red) 45%, white);
+  background: color-mix(in srgb, var(--hope-red) 7%, white);
   color: #8e1418;
 }
 
 .stats__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
-  gap: 0.8rem;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 0.9rem;
 }
 
 .stats__card {
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 0.8rem;
-  padding: 0.9rem;
-  background: #fff;
-  border-top: 4px solid var(--accent, var(--hope-cyan));
+  border: 1px solid #e3ecf4;
+  border-radius: 0.95rem;
+  padding: 0.95rem;
+  background: linear-gradient(160deg, #ffffff 0%, #f7fbff 100%);
+  box-shadow: 0 12px 24px rgba(4, 52, 80, 0.05);
+  border-left: 4px solid var(--accent, var(--hope-cyan));
 }
 
 .stats__card--success {
@@ -108,43 +120,141 @@ function icon(status) {
 
 .stats__head {
   display: flex;
-  align-items: start;
+  align-items: center;
   justify-content: space-between;
-  gap: 0.5rem;
+  gap: 0.6rem;
 }
 
 .stats__title {
   margin: 0;
-  font-size: 0.82rem;
-  color: color-mix(in srgb, var(--hope-dark) 65%, white);
+  font-size: 0.76rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #5f7486;
 }
 
 .stats__icon {
-  width: 1.6rem;
-  height: 1.6rem;
-  border-radius: 0.5rem;
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 0.58rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   color: var(--accent, var(--hope-cyan));
-  background: color-mix(in srgb, var(--accent, var(--hope-cyan)) 12%, white);
+  background: color-mix(in srgb, var(--accent, var(--hope-cyan)) 15%, white);
+  border: 1px solid color-mix(in srgb, var(--accent, var(--hope-cyan)) 30%, white);
 }
 
 .stats__icon svg {
-  width: 1rem;
-  height: 1rem;
+  width: 1.05rem;
+  height: 1.05rem;
 }
 
 .stats__value {
-  margin: 0.45rem 0 0;
-  font-size: 1.65rem;
+  margin: 0.6rem 0 0;
+  font-size: 1.75rem;
   font-weight: 800;
-  color: var(--hope-dark);
+  color: #122f43;
+  line-height: 1.1;
+}
+
+.stats__foot {
+  margin-top: 0.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
 }
 
 .stats__meta {
-  margin: 0.22rem 0 0;
-  font-size: 0.8rem;
-  color: color-mix(in srgb, var(--hope-dark) 60%, white);
+  margin: 0;
+  font-size: 0.78rem;
+  color: #5d7385;
+}
+
+.stats__badge {
+  font-size: 0.64rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 0.2rem 0.45rem;
+  color: color-mix(in srgb, var(--accent, var(--hope-cyan)) 75%, #15384e);
+  background: color-mix(in srgb, var(--accent, var(--hope-cyan)) 18%, white);
+}
+
+.stats__empty {
+  grid-column: 1 / -1;
+  border: 1px dashed #c9d7e3;
+  border-radius: 0.9rem;
+  padding: 1rem;
+  text-align: center;
+  font-size: 0.86rem;
+  color: #5a7082;
+  background: #fbfdff;
+}
+
+@media (max-width: 640px) {
+  .stats__grid {
+    grid-template-columns: 1fr;
+    gap: 0.7rem;
+  }
+
+  .stats__card {
+    padding: 0.8rem;
+  }
+
+  .stats__title {
+    font-size: 0.7rem;
+  }
+
+  .stats__value {
+    font-size: 1.5rem;
+  }
+
+  .stats__meta {
+    font-size: 0.74rem;
+  }
+
+  .stats__badge {
+    font-size: 0.58rem;
+    padding: 0.16rem 0.36rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .stats__state,
+  .stats__empty {
+    padding: 0.82rem;
+    font-size: 0.8rem;
+  }
+
+  .stats__card {
+    border-radius: 0.85rem;
+    padding: 0.72rem;
+  }
+
+  .stats__icon {
+    width: 1.65rem;
+    height: 1.65rem;
+    border-radius: 0.5rem;
+  }
+
+  .stats__icon svg {
+    width: 0.94rem;
+    height: 0.94rem;
+  }
+
+  .stats__value {
+    font-size: 1.34rem;
+  }
+
+  .stats__foot {
+    margin-top: 0.35rem;
+  }
+
+  .stats__meta {
+    font-size: 0.7rem;
+  }
 }
 </style>

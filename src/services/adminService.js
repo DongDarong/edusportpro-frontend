@@ -16,6 +16,8 @@ function normalizeDashboard(payload) {
     summaryCards: Array.isArray(data.summaryCards) ? data.summaryCards : [],
     recentActivities: Array.isArray(data.recentActivities) ? data.recentActivities : [],
     teamsOverview: Array.isArray(data.teamsOverview) ? data.teamsOverview : [],
+    standingsPreview: Array.isArray(data.standingsPreview) ? data.standingsPreview : [],
+    topScorers: Array.isArray(data.topScorers) ? data.topScorers : [],
   }
 }
 

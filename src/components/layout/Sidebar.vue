@@ -15,8 +15,8 @@ const { state, clearAuth } = useAuthStore()
 const { t } = useLanguage()
 
 const secondaryLinks = [
-  { key: 'common.helpCenter', to: '/' },
-  { key: 'common.notifications', to: '/notifications' },
+  { key: 'common.helpCenter', to: '/', icon: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
+  { key: 'common.notifications', to: '/notifications', icon: 'M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9' },
 ]
 
 const currentPath = computed(() => route.path)
@@ -45,248 +45,88 @@ function handleLogout() {
 </script>
 
 <template>
-  <nav class="sidebar" aria-label="Main navigation">
-    <div class="sidebar__header">
-      <div class="sidebar__brand-wrapper">
+  <nav class="flex h-full flex-col" aria-label="Main navigation">
+    <div class="py-2 pb-6 max-[480px]:pb-4">
+      <div class="mb-5 flex items-start justify-between">
         <slot name="header">
           <SidebarBrand />
         </slot>
-        <button type="button" class="sidebar__close" aria-label="Close sidebar" @click="onClose">
-          x
+        <button
+          type="button"
+          class="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-slate-100 p-1.5 text-slate-500 transition-all hover:bg-slate-200 hover:text-slate-900 md:hidden"
+          aria-label="Close sidebar"
+          @click="onClose"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-full w-full">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
         </button>
       </div>
-      <div class="sidebar__user">
-        <p class="sidebar__user-name">{{ state.user?.name || t('common.guest') }}</p>
-        <p class="sidebar__user-role">{{ state.user?.role ? state.user.role.toUpperCase() : t('common.notSignedIn') }}</p>
+    </div>
+
+    <div
+      class="flex-1 space-y-8 overflow-y-auto pr-1 [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-slate-200"
+    >
+      <div class="space-y-2">
+        <AdminSidebarSection
+          v-if="shouldShowRole('admin')"
+          :active-path="currentPath"
+          :active-role="isRoleActive('admin')"
+          @navigate="onClose"
+        />
+        <CoachSidebarSection
+          v-if="shouldShowRole('coach')"
+          :active-path="currentPath"
+          :active-role="isRoleActive('coach')"
+          @navigate="onClose"
+        />
+        <PlayerSidebarSection
+          v-if="shouldShowRole('player')"
+          :active-path="currentPath"
+          :active-role="isRoleActive('player')"
+          @navigate="onClose"
+        />
       </div>
+
+      <section aria-label="Secondary navigation">
+        <h2 class="mb-4 ml-2 text-[11px] font-bold uppercase tracking-widest text-slate-400">
+          {{ t('common.resources') }}
+        </h2>
+        <ul class="space-y-1.5">
+          <li v-for="link in secondaryLinks" :key="link.to">
+            <RouterLink
+              :to="link.to"
+              class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[15px] font-medium transition-all max-[480px]:p-2 max-[480px]:text-sm"
+              :class="[
+                isActive(link.to)
+                  ? 'bg-sky-50 font-semibold text-[var(--hope-o-cyan-blue)]'
+                  : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'
+              ]"
+              @click="onClose"
+            >
+              <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="link.icon" />
+              </svg>
+              <span>{{ t(link.key) }}</span>
+            </RouterLink>
+          </li>
+        </ul>
+      </section>
     </div>
 
-    <div class="sidebar__menu">
-      <AdminSidebarSection
-        v-if="shouldShowRole('admin')"
-        :active-path="currentPath"
-        :active-role="isRoleActive('admin')"
-        @navigate="onClose"
-      />
-      <CoachSidebarSection
-        v-if="shouldShowRole('coach')"
-        :active-path="currentPath"
-        :active-role="isRoleActive('coach')"
-        @navigate="onClose"
-      />
-      <PlayerSidebarSection
-        v-if="shouldShowRole('player')"
-        :active-path="currentPath"
-        :active-role="isRoleActive('player')"
-        @navigate="onClose"
-      />
-    </div>
-
-    <section class="sidebar__secondary" aria-label="Secondary navigation">
-      <h2>{{ t('common.resources') }}</h2>
-      <ul>
-        <li v-for="link in secondaryLinks" :key="link.to">
-          <RouterLink
-            :to="link.to"
-            class="sidebar__secondary-link"
-            :class="{ 'sidebar__link--active': isActive(link.to) }"
-            @click="onClose"
-          >
-            {{ t(link.key) }}
-          </RouterLink>
-        </li>
-      </ul>
-    </section>
-
-    <div class="sidebar__footer">
-      <button v-if="state.user" type="button" class="sidebar__logout" @click="handleLogout">
-        {{ t('common.logout') }}
+    <div class="mt-auto pt-6">
+      <button
+        v-if="state.user"
+        type="button"
+        class="flex w-full items-center justify-center gap-3 rounded-xl border-1.5 border-red-100 bg-white p-3 text-[15px] font-semibold text-[var(--hope-p-vibrant-red)] transition-all hover:-translate-y-0.5 hover:border-red-200 hover:bg-red-50"
+        @click="handleLogout"
+      >
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+        </svg>
+        <span>{{ t('common.logout') }}</span>
       </button>
     </div>
   </nav>
 </template>
 
-<style scoped>
-.sidebar {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.sidebar__header {
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--hope-o-cyan-blue);
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-}
-
-.sidebar__brand-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-}
-
-.sidebar__close {
-  display: none;
-  width: 30px;
-  height: 30px;
-  border: 0;
-  border-radius: 0.4rem;
-  background: transparent;
-  color: var(--color-text);
-  cursor: pointer;
-}
-
-.sidebar__close:hover {
-  background: var(--hope-e-golden-yellow);
-}
-
-.sidebar__user {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.8);
-}
-
-.sidebar__user-name {
-  margin: 0;
-  font-weight: 600;
-  color: var(--color-text);
-}
-
-.sidebar__user-role {
-  margin: 0;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-}
-
-.sidebar__logout {
-  width: 100%;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  background: rgba(255, 255, 255, 0.04);
-  color: #fff;
-  padding: 0.55rem 0.7rem;
-  font-size: 0.82rem;
-  border-radius: 0.6rem;
-  text-align: center;
-  cursor: pointer;
-}
-
-.sidebar__logout:hover {
-  border-color: var(--hope-o-cyan-blue);
-  background: color-mix(in oklab, var(--hope-o-cyan-blue) 12%, transparent);
-}
-
-.sidebar__menu {
-  display: grid;
-  gap: 0.6rem;
-}
-
-.sidebar__secondary {
-  border-top: 1px dashed rgba(255, 255, 255, 0.2);
-  padding-top: 0.75rem;
-}
-
-.sidebar__secondary h2 {
-  margin: 0 0 0.4rem;
-  font-size: 0.75rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.sidebar__secondary ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.sidebar__secondary-link {
-  color: rgba(255, 255, 255, 0.75);
-  font-size: 0.9rem;
-  text-decoration: none;
-}
-
-.sidebar__secondary-link:hover {
-  color: var(--hope-o-cyan-blue);
-}
-
-.sidebar__link {
-  display: block;
-  text-decoration: none;
-  color: var(--color-text);
-  font-weight: 500;
-  padding: 0.6rem 0.7rem;
-  border-radius: 0.55rem;
-}
-
-.sidebar__link:hover {
-  background: var(--hope-e-golden-yellow);
-}
-
-.sidebar__link--active {
-  background: color-mix(in oklab, var(--hope-o-cyan-blue) 18%, white);
-  color: var(--color-text);
-  border: 1px solid var(--hope-o-cyan-blue);
-}
-
-.sidebar__footer {
-  margin-top: auto;
-  padding-top: 0.65rem;
-  border-top: 1px solid var(--hope-o-cyan-blue);
-}
-
-.sidebar__meta {
-  font-size: 0.75rem;
-  color: var(--color-text);
-}
-
-@media (max-width: 768px) {
-  .sidebar__close {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-  }
-}
-
-@media (max-width: 600px) {
-  .sidebar {
-    gap: 0.75rem;
-  }
-
-  .sidebar__link {
-    padding: 0.55rem 0.6rem;
-    font-size: 0.88rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .sidebar__header {
-    padding-bottom: 0.4rem;
-  }
-
-  .sidebar__link {
-    padding: 0.5rem 0.5rem;
-    font-size: 0.82rem;
-    border-radius: 0.45rem;
-  }
-
-  .sidebar__meta {
-    font-size: 0.7rem;
-  }
-}
-
-@media (max-width: 360px) {
-  .sidebar__close {
-    width: 26px;
-    height: 26px;
-  }
-}
-</style>
