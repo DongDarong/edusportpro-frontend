@@ -14,16 +14,7 @@ const router = useRouter()
 const { state, clearAuth } = useAuthStore()
 const { t } = useLanguage()
 
-const secondaryLinks = [
-  { key: 'common.helpCenter', to: '/', icon: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
-  { key: 'common.notifications', to: '/notifications', icon: 'M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9' },
-]
-
 const currentPath = computed(() => route.path)
-
-function isActive(path) {
-  return currentPath.value === path
-}
 
 function isRoleActive(role) {
   return state.user?.role === role
@@ -88,30 +79,6 @@ function handleLogout() {
         />
       </div>
 
-      <section aria-label="Secondary navigation">
-        <h2 class="mb-4 ml-2 text-[11px] font-bold uppercase tracking-widest text-slate-400">
-          {{ t('common.resources') }}
-        </h2>
-        <ul class="space-y-1.5">
-          <li v-for="link in secondaryLinks" :key="link.to">
-            <RouterLink
-              :to="link.to"
-              class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[15px] font-medium transition-all max-[480px]:p-2 max-[480px]:text-sm"
-              :class="[
-                isActive(link.to)
-                  ? 'bg-sky-50 font-semibold text-[var(--hope-o-cyan-blue)]'
-                  : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'
-              ]"
-              @click="onClose"
-            >
-              <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="link.icon" />
-              </svg>
-              <span>{{ t(link.key) }}</span>
-            </RouterLink>
-          </li>
-        </ul>
-      </section>
     </div>
 
     <div class="mt-auto pt-6">

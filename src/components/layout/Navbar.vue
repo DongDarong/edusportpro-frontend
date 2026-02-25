@@ -443,9 +443,53 @@ function onToggleSidebar() {
   }
 }
 
+@media (max-width: 420px) {
+  .navbar {
+    gap: 0.5rem;
+  }
+
+  .navbar__logo-box {
+    height: 36px;
+  }
+
+  .navbar__icon-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .navbar__bell-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .navbar__badge {
+    top: 4px;
+    right: 4px;
+    min-width: 14px;
+    height: 14px;
+    font-size: 0.55rem;
+  }
+}
+
 @media (max-width: 380px) {
   .navbar__lang-wrapper {
     display: none;
+  }
+}
+
+@media (max-width: 360px) {
+  .navbar {
+    gap: 0.35rem;
+  }
+
+  .navbar__profile {
+    padding-left: 0.25rem;
+  }
+
+  .navbar__avatar {
+    width: 30px;
+    height: 30px;
+    font-size: 0.7rem;
   }
 }
 </style>

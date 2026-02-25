@@ -50,7 +50,7 @@ onMounted(loadDashboard)
     <template #navbar="{ toggleSidebar }">
       <Navbar @toggle-sidebar="toggleSidebar">
         <template #title>
-          <h1 class="m-0 text-[1.15rem] font-bold max-[640px]:text-base">Admin Dashboard</h1>
+          <h1 class="m-0 text-[1.15rem] font-bold max-[768px]:hidden">Organization for Children’s Hope Foundation of Cambodia</h1>
         </template>
       </Navbar>
     </template>
@@ -60,10 +60,6 @@ onMounted(loadDashboard)
     </template>
 
     <section class="grid gap-4 max-[640px]:gap-3.5 max-[420px]:gap-2.5">
-      <HeaderSection
-        title="Dashboard Overview"
-        subtitle="Welcome back, here's what's happening with your teams."
-      />
 
       <div v-if="loading" class="flex min-h-[260px] items-center justify-center max-[640px]:min-h-[180px]">
         <LoadingSpinner label="Loading admin dashboard" size="lg" />
@@ -84,6 +80,11 @@ onMounted(loadDashboard)
       </div>
 
       <template v-else>
+          <HeaderSection
+        title="Dashboard Overview"
+        subtitle="Welcome back, here's what's happening with your teams."
+          />
+
         <StatsCards :cards="summaryCards" :loading="false" :error="''" />
 
         <TournamentHighlights
