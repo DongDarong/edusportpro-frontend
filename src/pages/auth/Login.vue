@@ -30,9 +30,9 @@ const selectedLanguage = computed({
 
 function dashboardForRole(role) {
   return {
-    admin: '/admin/dashboard',
-    coach: '/coach/dashboard',
-    player: '/player/dashboard',
+    admin: '/dashboard',
+    coach: '/dashboard',
+    player: '/dashboard',
   }[role] ?? '/login'
 }
 

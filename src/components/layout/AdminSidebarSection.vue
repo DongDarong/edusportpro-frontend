@@ -19,12 +19,12 @@ const { t } = useLanguage()
 const navItems = [
   {
     name: 'common.dashboard',
-    path: '/admin/dashboard',
+    path: '/dashboard',
     icon: 'M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z'
   },
   {
     name: 'common.users',
-    path: '/admin/users',
+    path: '/users',
     icon: 'M17 20h5v-1a4 4 0 00-5-3.87M9 20H4v-1a4 4 0 015-3.87m8-6.13a4 4 0 11-8 0 4 4 0 018 0zM3 8a3 3 0 116 0 3 3 0 01-6 0z',
   },
 ]

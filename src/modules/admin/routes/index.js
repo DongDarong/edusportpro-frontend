@@ -1,17 +1,20 @@
-import AdminDashboard from '../pages/AdminDashboard.vue'
 import AdminUsers from '../pages/AdminUsers.vue'
 
 export const adminRoutes = [
   {
+    path: '/users',
+    name: 'admin-users',
+    component: AdminUsers,
+    meta: { requiresAuth: true, allowedRoles: ['admin'] },
+  },
+  {
     path: '/admin/dashboard',
-    name: 'admin-dashboard',
-    component: AdminDashboard,
+    redirect: '/dashboard',
     meta: { requiresAuth: true },
   },
   {
     path: '/admin/users',
-    name: 'admin-users',
-    component: AdminUsers,
+    redirect: '/users',
     meta: { requiresAuth: true },
   },
 ]
